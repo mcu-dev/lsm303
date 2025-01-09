@@ -1,0 +1,8 @@
+build/
+.vscode/
+
+# clang-format files
+clang-format.log
+
+# ID Related files
+lsm303.code-workspace
