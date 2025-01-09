@@ -34,15 +34,19 @@
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_setup(lsm303_dev **device, lsm303_init_param lsm303_params) {
-  uint8_t ret;
+int8_t lsm303_setup(lsm303_dev **device, lsm303_init_param lsm303_params) {
+  int8_t ret = 0;
 
-  lsm303_dev *dev;
+  lsm303_dev *dev = (lsm303_dev *)k_malloc(sizeof(lsm303_dev));
 
-  dev->acc_power_mode  = lsm303_params.acc_power_mode;
-  dev->acc_odr         = lsm303_params.acc_odr;
+  if (dev == NULL) {
+    return LSM303_STATUS_ALLOC_ERR;
+  }
+
+  dev->acc_power_mode = lsm303_params.acc_power_mode;
+  dev->acc_odr = lsm303_params.acc_odr;
   dev->acc_axes_config = lsm303_params.acc_axes_config;
-  dev->acc_scale       = lsm303_params.acc_scale;
+  dev->acc_scale = lsm303_params.acc_scale;
 
   ret |= lsm303_set_power_mode(dev, dev->acc_power_mode);
   ret |= lsm303_acc_enable_axes(dev, dev->acc_axes_config);
@@ -67,12 +71,12 @@ uint8_t lsm303_setup(lsm303_dev **device, lsm303_init_param lsm303_params) {
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_set_power_mode(lsm303_dev *device,
-                              enum lsm303_acc_power_mode mode) {
+int8_t lsm303_set_power_mode(lsm303_dev *device,
+                             enum lsm303_acc_power_mode mode) {
   uint8_t val = 0x00;
   uint8_t data_buffer[2];
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -90,7 +94,7 @@ uint8_t lsm303_set_power_mode(lsm303_dev *device,
     device->acc_power_mode = mode;
   }
 
-  return lsm303_i2c_write(&device, ACC_I2C_ADDRESS, data_buffer);
+  return lsm303_i2c_write(device, ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -107,12 +111,11 @@ uint8_t lsm303_set_power_mode(lsm303_dev *device,
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_acc_enable_axes(lsm303_dev *device,
-                               lsm303_acc_axes_config axes) {
+int8_t lsm303_acc_enable_axes(lsm303_dev *device, lsm303_acc_axes_config axes) {
   uint8_t val = 0x00;
   uint8_t data_buffer[2];
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -131,7 +134,7 @@ uint8_t lsm303_acc_enable_axes(lsm303_dev *device,
     device->acc_axes_config = axes;
   }
 
-  return lsm303_i2c_write(&device, ACC_I2C_ADDRESS, data_buffer);
+  return lsm303_i2c_write(device, ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -147,11 +150,11 @@ uint8_t lsm303_acc_enable_axes(lsm303_dev *device,
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr) {
+int8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr) {
   uint8_t val = 0x00;
   uint8_t data_buffer[2];
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -166,7 +169,7 @@ uint8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr) {
     device->acc_odr = odr;
   }
 
-  return lsm303_i2c_write(&device, ACC_I2C_ADDRESS, data_buffer);
+  return lsm303_i2c_write(device, ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -182,12 +185,12 @@ uint8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr) {
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_acc_set_scale(lsm303_dev *device,
-                             enum lsm303_acc_full_scale scale) {
+int8_t lsm303_acc_set_scale(lsm303_dev *device,
+                            enum lsm303_acc_full_scale scale) {
   uint8_t val = 0x00;
   uint8_t data_buffer[2];
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, CTRL_REG1_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -202,7 +205,7 @@ uint8_t lsm303_acc_set_scale(lsm303_dev *device,
     device->acc_scale = scale;
   }
 
-  return lsm303_i2c_write(&device, ACC_I2C_ADDRESS, data_buffer);
+  return lsm303_i2c_write(device, ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -216,10 +219,10 @@ uint8_t lsm303_acc_set_scale(lsm303_dev *device,
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_data_ready(lsm303_dev *device) {
+int8_t lsm303_data_ready(lsm303_dev *device) {
   uint8_t val = 0x00;
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, STATUS_REG_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, STATUS_REG_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -245,17 +248,17 @@ uint8_t lsm303_data_ready(lsm303_dev *device) {
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_get_x_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
+int8_t lsm303_get_x_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
   uint8_t val = 0x00;
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, OUT_X_H_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, OUT_X_H_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
 
   accel_data->x = (int16_t)(val << 8);
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, OUT_X_L_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, OUT_X_L_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -279,17 +282,17 @@ uint8_t lsm303_get_x_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_get_y_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
+int8_t lsm303_get_y_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
   uint8_t val = 0x00;
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, OUT_Y_H_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, OUT_Y_H_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
 
   accel_data->y = (int16_t)(val << 8);
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, OUT_Y_L_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, OUT_Y_L_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -313,17 +316,17 @@ uint8_t lsm303_get_y_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_get_z_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
+int8_t lsm303_get_z_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
   uint8_t val = 0x00;
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, OUT_Z_H_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, OUT_Z_H_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
 
   accel_data->z = (int16_t)(val << 8);
 
-  if (lsm303_i2c_read(&device, ACC_I2C_ADDRESS, OUT_Z_L_A, &val) !=
+  if (lsm303_i2c_read(device, ACC_I2C_ADDRESS, OUT_Z_L_A, &val) !=
       LSM303_STATUS_SUCCESS) {
     return LSM303_STATUS_API_ERR;
   }
@@ -348,12 +351,22 @@ uint8_t lsm303_get_z_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_i2c_read(lsm303_dev *device, uint8_t address, uint8_t reg,
-                        uint8_t *read_data) {
-  uint8_t ret = 0;
+int8_t lsm303_i2c_read(lsm303_dev *device, uint8_t address, uint8_t reg,
+                       uint8_t *read_data) {
+#ifdef PLATFORM_ZEPHYR
+  uint32_t bytecount = 1;
 
-  // TO DO: I2C communication
-  return ret;
+  if (i2c_write(device->i2c0_dev, &reg, bytecount, address) !=
+      LSM303_STATUS_SUCCESS) {
+    return LSM303_STATUS_API_ERR;
+  }
+
+  if (i2c_read(device->i2c0_dev, read_data, sizeof(*read_data), address) != 0) {
+    return LSM303_STATUS_API_ERR;
+  }
+
+  return LSM303_STATUS_SUCCESS;
+#endif
 }
 
 /**
@@ -370,10 +383,10 @@ uint8_t lsm303_i2c_read(lsm303_dev *device, uint8_t address, uint8_t reg,
  *   - 0 on success.
  *   - Non-zero error code on failure.
  */
-uint8_t lsm303_i2c_write(lsm303_dev *device, uint8_t address,
-                         uint8_t *data_buffer) {
-  uint8_t ret = 0;
-
-  // TO DO: I2C communication
-  return ret;
+int8_t lsm303_i2c_write(lsm303_dev *device, uint8_t address,
+                        uint8_t *data_buffer) {
+#ifdef PLATFORM_ZEPHYR
+  uint32_t bytecount = 2;
+  return i2c_write(device->i2c0_dev, data_buffer, bytecount, address);
+#endif
 }
