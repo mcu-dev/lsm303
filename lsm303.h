@@ -22,9 +22,9 @@
 #define LSM303_H
 
 #include <math.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #ifdef PLATFORM_ZEPHYR
 #include <zephyr/device.h>
@@ -66,6 +66,7 @@ typedef enum {
 #define ACC_AXES_MASK 0
 #define ACC_ODR_MASK 4
 #define ACC_SCALE_MASK 4
+#define ACC_RESOLUTION_MASK 3
 
 /***********************ACCELEROMETER REGISTERS********************************/
 
@@ -137,9 +138,9 @@ enum lsm303_acc_odr {
   ACC_ODR_100HZ = 0x05,
   ACC_ODR_200HZ = 0x06,
   ACC_ODR_400HZ = 0x07,
-  ACC_ODR_1_620KHZ = 0x08,
-  ACC_ODR_1_344KHZ = 0x09,
-  ACC_ODR_5_376KHZ = 0x09
+  ACC_ODR_1K620HZ = 0x08,
+  ACC_ODR_1K344HZ = 0x09,
+  ACC_ODR_5K376HZ = 0x09
 };
 
 enum lsm303_acc_axes_enable {
@@ -156,8 +157,13 @@ enum lsm303_acc_axes_enable {
 enum lsm303_acc_full_scale {
   ACC_SCALE_2G = 0x00,
   ACC_SCALE_4G = 0x01,
-  ACC_SCALE_8G = 0x10,
-  ACC_SCALE_16G = 0x11
+  ACC_SCALE_8G = 0x02,
+  ACC_SCALE_16G = 0x03
+};
+
+enum lsm303_acc_resolution {
+  ACC_RESOLUTION_LOW = 0x00,
+  ACC_RESOLUTION_HIGH = 0x01
 };
 
 /*****************************MAG DESCRIPTORS**********************************/
@@ -210,6 +216,7 @@ typedef struct {
   enum lsm303_mag_odr mag_odr;
   enum lsm303_acc_full_scale acc_scale;
   enum lsm303_mag_full_scale mag_scale;
+  enum lsm303_acc_resolution acc_resolution;
   lsm303_acc_axes_config acc_axes_config;
 #ifdef PLATFORM_ZEPHYR
   struct device *i2c0_dev;
@@ -224,6 +231,7 @@ typedef struct {
   enum lsm303_mag_odr mag_odr;
   enum lsm303_acc_full_scale acc_scale;
   enum lsm303_mag_full_scale mag_scale;
+  enum lsm303_acc_resolution acc_resolution;
   lsm303_acc_axes_config acc_axes_config;
 #ifdef PLATFORM_ZEPHYR
   struct device *i2c0_dev;
@@ -233,7 +241,7 @@ typedef struct {
 
 /*******************************PROTOTYPES*************************************/
 
-int8_t lsm303_setup(lsm303_dev **device, lsm303_init_param lsm303_params);
+int8_t lsm303_setup(lsm303_dev *dev, lsm303_init_param lsm303_params);
 
 int8_t lsm303_set_power_mode(lsm303_dev *device,
                              enum lsm303_acc_power_mode mode);
@@ -245,13 +253,18 @@ int8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr);
 int8_t lsm303_acc_set_scale(lsm303_dev *device,
                             enum lsm303_acc_full_scale scale);
 
+int8_t lsm303_acc_set_resolution(lsm303_dev *device,
+                                 enum lsm303_acc_resolution resolution);
+
 int8_t lsm303_data_ready(lsm303_dev *device);
 
-int8_t lsm303_get_x_data(lsm303_dev *device, lsm303_axes_data *accel_data);
+int8_t lsm303_get_x_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data);
 
-int8_t lsm303_get_y_data(lsm303_dev *device, lsm303_axes_data *accel_data);
+int8_t lsm303_get_y_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data);
 
-int8_t lsm303_get_z_data(lsm303_dev *device, lsm303_axes_data *accel_data);
+int8_t lsm303_get_z_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data);
+
+float convert_raw_to_g(lsm303_dev *device, int16_t raw_value);
 
 int8_t lsm303_i2c_read(lsm303_dev *device, uint8_t address, uint8_t reg,
                        uint8_t *read_data);
