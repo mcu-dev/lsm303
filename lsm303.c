@@ -37,11 +37,11 @@
 int8_t lsm303_setup(lsm303_dev *dev, lsm303_init_param lsm303_params) {
   int8_t ret = 0;
 
-  dev->acc_power_mode = lsm303_params.acc_power_mode;
-  dev->acc_odr = lsm303_params.acc_odr;
+  dev->acc_power_mode  = lsm303_params.acc_power_mode;
+  dev->acc_odr         = lsm303_params.acc_odr;
   dev->acc_axes_config = lsm303_params.acc_axes_config;
-  dev->acc_scale = lsm303_params.acc_scale;
-  dev->acc_resolution = lsm303_params.acc_resolution;
+  dev->acc_scale       = lsm303_params.acc_scale;
+  dev->acc_resolution  = lsm303_params.acc_resolution;
   // dev->i2c0_dev = DEVICE_DT_GET(i2c0_master);
   dev->i2c0_dev = (struct device *)DEVICE_DT_GET(i2c0_master);
 
@@ -122,10 +122,10 @@ int8_t lsm303_acc_enable_axes(lsm303_dev *device, lsm303_acc_axes_config axes) {
   }
 
   val &= ~0x07;
-  val = val | axes.acc_axes << ACC_AXES_MASK;
-  axes.enable.z = (val & (1 << 2)) >> 2;
-  axes.enable.y = (val & (1 << 1)) >> 1;
-  axes.enable.x = (val & 1);
+  val                     = val | axes.acc_axes << ACC_AXES_MASK;
+  axes.enable.z           = (val & (1 << 2)) >> 2;
+  axes.enable.y           = (val & (1 << 1)) >> 1;
+  axes.enable.x           = (val & 1);
   device->acc_axes_config = axes;
 
   uint8_t data_buffer[] = {CTRL_REG1_A, val};
@@ -154,7 +154,7 @@ int8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr) {
   }
 
   val &= ~0xF0;
-  val = val | odr << ACC_ODR_MASK;
+  val             = val | odr << ACC_ODR_MASK;
   device->acc_odr = odr;
 
   uint8_t data_buffer[] = {CTRL_REG1_A, val};
@@ -184,7 +184,7 @@ int8_t lsm303_acc_set_scale(lsm303_dev *device,
   }
 
   val &= ~0x30;
-  val = val | scale << ACC_SCALE_MASK;
+  val               = val | scale << ACC_SCALE_MASK;
   device->acc_scale = scale;
 
   uint8_t data_buffer[] = {CTRL_REG4_A, val};
@@ -214,7 +214,7 @@ int8_t lsm303_acc_set_resolution(lsm303_dev *device,
   }
 
   val &= ~0x08;
-  val = val | resolution << ACC_RESOLUTION_MASK;
+  val                    = val | resolution << ACC_RESOLUTION_MASK;
   device->acc_resolution = resolution;
 
   uint8_t data_buffer[] = {CTRL_REG4_A, val};
