@@ -42,13 +42,14 @@ int8_t lsm303_setup(lsm303_dev *dev, lsm303_init_param lsm303_params) {
   dev->acc_axes_config = lsm303_params.acc_axes_config;
   dev->acc_scale       = lsm303_params.acc_scale;
   dev->acc_resolution  = lsm303_params.acc_resolution;
-  // dev->i2c0_dev = DEVICE_DT_GET(i2c0_master);
+
+#ifdef PLATFORM_ZEPHYR
   dev->i2c0_dev = (struct device *)DEVICE_DT_GET(i2c0_master);
 
   if (!device_is_ready(dev->i2c0_dev)) {
-    printk("I2C bus is not ready!\n\r");
     return LSM303_STATUS_API_ERR;
   }
+#endif
 
   ret |= lsm303_set_power_mode(dev, dev->acc_power_mode);
   ret |= lsm303_acc_enable_axes(dev, dev->acc_axes_config);
@@ -122,10 +123,11 @@ int8_t lsm303_acc_enable_axes(lsm303_dev *device, lsm303_acc_axes_config axes) {
   }
 
   val &= ~0x07;
-  val                     = val | axes.acc_axes << ACC_AXES_MASK;
-  axes.enable.z           = (val & (1 << 2)) >> 2;
-  axes.enable.y           = (val & (1 << 1)) >> 1;
-  axes.enable.x           = (val & 1);
+  val           = val | axes.acc_axes << ACC_AXES_MASK;
+  axes.enable.z = (val & (1 << 2)) >> 2;
+  axes.enable.y = (val & (1 << 1)) >> 1;
+  axes.enable.x = (val & 1);
+
   device->acc_axes_config = axes;
 
   uint8_t data_buffer[] = {CTRL_REG1_A, val};
@@ -153,8 +155,20 @@ int8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr) {
     return LSM303_STATUS_API_ERR;
   }
 
+  if (odr == ACC_ODR_1K620HZ || odr == ACC_ODR_5K376HZ) {
+    if (device->mag_power_mode != ACC_LOW_POWER) {
+      printk("ODR only works in low-power mode\r\n");
+      return LSM303_STATUS_INPUT_ERR;
+    }
+  }
+
   val &= ~0xF0;
-  val             = val | odr << ACC_ODR_MASK;
+  if (odr == ACC_ODR_5K376HZ) {
+    val = val | (odr - 1) << ACC_ODR_MASK;
+  } else {
+    val = val | odr << ACC_ODR_MASK;
+  }
+
   device->acc_odr = odr;
 
   uint8_t data_buffer[] = {CTRL_REG1_A, val};
@@ -184,7 +198,8 @@ int8_t lsm303_acc_set_scale(lsm303_dev *device,
   }
 
   val &= ~0x30;
-  val               = val | scale << ACC_SCALE_MASK;
+  val = val | scale << ACC_SCALE_MASK;
+
   device->acc_scale = scale;
 
   uint8_t data_buffer[] = {CTRL_REG4_A, val};
@@ -214,7 +229,8 @@ int8_t lsm303_acc_set_resolution(lsm303_dev *device,
   }
 
   val &= ~0x08;
-  val                    = val | resolution << ACC_RESOLUTION_MASK;
+  val = val | resolution << ACC_RESOLUTION_MASK;
+
   device->acc_resolution = resolution;
 
   uint8_t data_buffer[] = {CTRL_REG4_A, val};
@@ -370,7 +386,21 @@ int8_t lsm303_get_z_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data) {
   return LSM303_STATUS_SUCCESS;
 }
 
-float convert_raw_to_g(lsm303_dev *device, int16_t raw_value) {
+/**
+ * @brief Converts raw accelerometer data to acceleration in g units.
+ *
+ * This function converts a raw accelerometer value from the LSM303 device
+ * to acceleration in g units, considering the device's sensitivity
+ * and configuration settings.
+ *
+ * @param device     Pointer to the LSM303 device structure containing
+ * configuration details such as sensitivity.
+ * @param raw_value  The raw accelerometer data to be converted.
+ *
+ * @return
+ *   The acceleration value in g units as a float.
+ */
+float lsm303_convert_raw_to_g(lsm303_dev *device, int16_t raw_value) {
   float sensitivity = 0.0;
 
   if (device->acc_resolution == ACC_RESOLUTION_LOW) {
@@ -443,7 +473,7 @@ float convert_raw_to_g(lsm303_dev *device, int16_t raw_value) {
     }
   }
 
-  return (float)raw_value * sensitivity / 1000.0;
+  return (float)raw_value * sensitivity / (float)1000.0;
 }
 
 /**
