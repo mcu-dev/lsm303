@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directories to process
-directories=(".")
+directories=("src" "test")
 
 # Log file
 log_file="clang-format.log"
