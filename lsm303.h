@@ -140,7 +140,7 @@ enum lsm303_acc_odr {
   ACC_ODR_400HZ   = 0x07,
   ACC_ODR_1K620HZ = 0x08,
   ACC_ODR_1K344HZ = 0x09,
-  ACC_ODR_5K376HZ = 0x09
+  ACC_ODR_5K376HZ = 0x0A
 };
 
 enum lsm303_acc_axes_enable {
@@ -264,7 +264,7 @@ int8_t lsm303_get_y_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data);
 
 int8_t lsm303_get_z_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data);
 
-float convert_raw_to_g(lsm303_dev *device, int16_t raw_value);
+float lsm303_convert_raw_to_g(lsm303_dev *device, int16_t raw_value);
 
 int8_t lsm303_i2c_read(lsm303_dev *device, uint8_t address, uint8_t reg,
                        uint8_t *read_data);
