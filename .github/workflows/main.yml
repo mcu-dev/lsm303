@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Update submodules to the latest commit
+        run: git submodule update --remote --recursive
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+
+      - name: Install specific Ceedling version
+        run: gem install ceedling -v 0.31.1
+
+      - name: Install gcc-avr
+        run: sudo apt-get update && sudo apt-get install -y gcc-avr
+
+      - name: Run Ceedling tests
+        run: ceedling test:all

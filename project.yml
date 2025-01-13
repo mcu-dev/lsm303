@@ -32,6 +32,7 @@
 :paths:
   :test:
     - +:test/**
+    - -:test/support
   :source:
     - src/**
   :support:
@@ -54,7 +55,6 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
-  :verbosity: 2
   :plugins:
     - :ignore
     - :array
