@@ -26,14 +26,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifdef PLATFORM_ZEPHYR
-#include <zephyr/device.h>
-#include <zephyr/devicetree.h>
-#include <zephyr/drivers/i2c.h>
-#include <zephyr/kernel.h>
-
-#define i2c0_master DT_NODELABEL(i2c0)
-#endif
+#include "utils/i2c.h"
 
 /* SA0 pin connection status */
 #define SA0 1
@@ -49,7 +42,7 @@ typedef enum {
   LSM303_STATUS_SUCCESS   = 0,
   LSM303_STATUS_API_ERR   = -1,
   LSM303_STATUS_INPUT_ERR = -2,
-  LSM303_STATUS_ALLOC_ERR = -3,
+  LSM303_STATUS_INIT_ERR  = -3,
 } LSM303_RETURN_STATUS;
 
 /*****************************ID REGISTERS*************************************/
@@ -218,9 +211,6 @@ typedef struct {
   enum lsm303_mag_full_scale mag_scale;
   enum lsm303_acc_resolution acc_resolution;
   lsm303_acc_axes_config acc_axes_config;
-#ifdef PLATFORM_ZEPHYR
-  struct device *i2c0_dev;
-#endif
   bool is_Setup;
 } lsm303_dev;
 
@@ -233,9 +223,6 @@ typedef struct {
   enum lsm303_mag_full_scale mag_scale;
   enum lsm303_acc_resolution acc_resolution;
   lsm303_acc_axes_config acc_axes_config;
-#ifdef PLATFORM_ZEPHYR
-  struct device *i2c0_dev;
-#endif
   bool is_Setup;
 } lsm303_init_param;
 
@@ -265,11 +252,5 @@ int8_t lsm303_get_y_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data);
 int8_t lsm303_get_z_raw_data(lsm303_dev *device, lsm303_axes_data *accel_data);
 
 float lsm303_convert_raw_to_g(lsm303_dev *device, int16_t raw_value);
-
-int8_t lsm303_i2c_read(lsm303_dev *device, uint8_t address, uint8_t reg,
-                       uint8_t *read_data);
-
-int8_t lsm303_i2c_write(lsm303_dev *device, uint8_t address,
-                        uint8_t *data_buffer);
 
 #endif /* LSM303_H */
