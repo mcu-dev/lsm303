@@ -32,7 +32,6 @@
 :paths:
   :test:
     - +:test/**
-    - -:test/support
   :source:
     - src/**
   :support:
@@ -55,8 +54,12 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
+  :verbosity: 2
   :plugins:
     - :ignore
+    - :array
+    - :ignore_arg
+    - :return_thru_ptr
     - :callback
   :treat_as:
     uint8:    HEX8
