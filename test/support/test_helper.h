@@ -8,7 +8,7 @@
 
 // Declare the generalized callback function
 void set_expected_i2c_write_data(uint8_t *expected_data, size_t size);
-signed char i2c_write_bytes_callback(uint8_t address, uint8_t *data_buffer,
+signed char i2c_write_byte_callback(uint8_t address, uint8_t *data_buffer,
                                      int cmock_num_calls);
 
 #endif // TEST_HELPERS_H

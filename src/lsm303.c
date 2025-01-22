@@ -93,7 +93,7 @@ int8_t lsm303_set_power_mode(lsm303_dev *device,
   device->acc_power_mode = mode;
 
   uint8_t data_buffer[] = {CTRL_REG1_A, val};
-  return i2c_write_bytes(ACC_I2C_ADDRESS, data_buffer);
+  return i2c_write_byte(ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -127,7 +127,7 @@ int8_t lsm303_acc_enable_axes(lsm303_dev *device, lsm303_acc_axes_config axes) {
   device->acc_axes_config = axes;
 
   uint8_t data_buffer[] = {CTRL_REG1_A, val};
-  return i2c_write_bytes(ACC_I2C_ADDRESS, data_buffer);
+  return i2c_write_byte(ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -167,7 +167,7 @@ int8_t lsm303_acc_set_odr(lsm303_dev *device, enum lsm303_acc_odr odr) {
   device->acc_odr = odr;
 
   uint8_t data_buffer[] = {CTRL_REG1_A, val};
-  return i2c_write_bytes(ACC_I2C_ADDRESS, data_buffer);
+  return i2c_write_byte(ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -198,7 +198,7 @@ int8_t lsm303_acc_set_scale(lsm303_dev *device,
   device->acc_scale = scale;
 
   uint8_t data_buffer[] = {CTRL_REG4_A, val};
-  return i2c_write_bytes(ACC_I2C_ADDRESS, data_buffer);
+  return i2c_write_byte(ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
@@ -229,7 +229,7 @@ int8_t lsm303_acc_set_resolution(lsm303_dev *device,
   device->acc_resolution = resolution;
 
   uint8_t data_buffer[] = {CTRL_REG4_A, val};
-  return i2c_write_bytes(ACC_I2C_ADDRESS, data_buffer);
+  return i2c_write_byte(ACC_I2C_ADDRESS, data_buffer);
 }
 
 /**
