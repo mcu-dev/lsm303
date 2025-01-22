@@ -9,7 +9,7 @@ void set_expected_i2c_write_data(uint8_t *expected_data_param, size_t size) {
   expected_data_size = size;
 }
 
-signed char i2c_write_bytes_callback(uint8_t address, uint8_t *data_buffer,
+signed char i2c_write_byte_callback(uint8_t address, uint8_t *data_buffer,
                                      int cmock_num_calls) {
   // Validate the address
   TEST_ASSERT_EQUAL(ACC_I2C_ADDRESS, address);

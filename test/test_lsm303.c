@@ -39,7 +39,7 @@ void test_lsm303_setup(void) {
                                 LSM303_STATUS_SUCCESS);
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&power_mode_return);
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, power_buffer,
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, power_buffer,
                                   LSM303_STATUS_SUCCESS);
 
   // AXES
@@ -47,7 +47,7 @@ void test_lsm303_setup(void) {
                                 LSM303_STATUS_SUCCESS);
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&enable_axes_return);
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, axes_buffer,
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, axes_buffer,
                                   LSM303_STATUS_SUCCESS);
 
   // ODR
@@ -55,7 +55,7 @@ void test_lsm303_setup(void) {
                                 LSM303_STATUS_SUCCESS);
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&set_odr_return);
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, odr_buffer,
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, odr_buffer,
                                   LSM303_STATUS_SUCCESS);
 
   // SCALE
@@ -63,7 +63,7 @@ void test_lsm303_setup(void) {
                                 LSM303_STATUS_SUCCESS);
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&set_scale_return);
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, scale_buffer,
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, scale_buffer,
                                   LSM303_STATUS_SUCCESS);
 
   // RESOLUTION
@@ -72,7 +72,7 @@ void test_lsm303_setup(void) {
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&set_resolution_return);
   ;
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, resolution_buffer,
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, resolution_buffer,
                                   LSM303_STATUS_SUCCESS);
 
   TEST_ASSERT_EQUAL(LSM303_STATUS_SUCCESS, lsm303_setup(&dev, init_param));
@@ -95,9 +95,9 @@ void test_lsm303_set_power_mode(void) {
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&read_data_result);
 
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
-  i2c_write_bytes_IgnoreArg_data_buffer();
-  i2c_write_bytes_StubWithCallback(i2c_write_bytes_callback);
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
+  i2c_write_byte_IgnoreArg_data_buffer();
+  i2c_write_byte_StubWithCallback(i2c_write_byte_callback);
 
   TEST_ASSERT_EQUAL(LSM303_STATUS_SUCCESS,
                     lsm303_set_power_mode(&dev, ACC_NORMAL));
@@ -115,9 +115,9 @@ void test_lsm303_acc_enable_axes(void) {
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&read_data_result);
 
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
-  i2c_write_bytes_IgnoreArg_data_buffer();
-  i2c_write_bytes_StubWithCallback(i2c_write_bytes_callback);
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
+  i2c_write_byte_IgnoreArg_data_buffer();
+  i2c_write_byte_StubWithCallback(i2c_write_byte_callback);
 
   TEST_ASSERT_EQUAL(LSM303_STATUS_SUCCESS,
                     lsm303_acc_enable_axes(&dev, init_param.acc_axes_config));
@@ -135,9 +135,9 @@ void test_lsm303_acc_set_odr(void) {
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&read_data_result);
 
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
-  i2c_write_bytes_IgnoreArg_data_buffer();
-  i2c_write_bytes_StubWithCallback(i2c_write_bytes_callback);
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
+  i2c_write_byte_IgnoreArg_data_buffer();
+  i2c_write_byte_StubWithCallback(i2c_write_byte_callback);
 
   TEST_ASSERT_EQUAL(LSM303_STATUS_SUCCESS,
                     lsm303_acc_set_odr(&dev, ACC_AXES_ENABLE_XYZ));
@@ -155,9 +155,9 @@ void test_lsm303_acc_set_scale(void) {
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&read_data_result);
 
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
-  i2c_write_bytes_IgnoreArg_data_buffer();
-  i2c_write_bytes_StubWithCallback(i2c_write_bytes_callback);
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
+  i2c_write_byte_IgnoreArg_data_buffer();
+  i2c_write_byte_StubWithCallback(i2c_write_byte_callback);
 
   TEST_ASSERT_EQUAL(LSM303_STATUS_SUCCESS,
                     lsm303_acc_set_scale(&dev, ACC_SCALE_8G));
@@ -175,9 +175,9 @@ void test_lsm303_acc_set_resolution(void) {
   i2c_read_byte_IgnoreArg_read_data();
   i2c_read_byte_ReturnThruPtr_read_data(&read_data_result);
 
-  i2c_write_bytes_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
-  i2c_write_bytes_IgnoreArg_data_buffer();
-  i2c_write_bytes_StubWithCallback(i2c_write_bytes_callback);
+  i2c_write_byte_ExpectAndReturn(ACC_I2C_ADDRESS, NULL, LSM303_STATUS_SUCCESS);
+  i2c_write_byte_IgnoreArg_data_buffer();
+  i2c_write_byte_StubWithCallback(i2c_write_byte_callback);
 
   TEST_ASSERT_EQUAL(LSM303_STATUS_SUCCESS,
                     lsm303_acc_set_resolution(&dev, ACC_RESOLUTION_HIGH));
